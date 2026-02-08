@@ -1,0 +1,36 @@
+# Visual Studio temporary files, build results, and cache
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# VS Code settings
+.vscode/
+
+# NuGet packages
+*.nupkg
+packages/
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Others
+*.swp
