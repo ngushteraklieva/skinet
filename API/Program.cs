@@ -32,6 +32,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+//this code runs database setup and seeding at app startup:
+//CreateScope() → creates a temporary service scope to access scoped services like DbContext.
+//GetRequiredService<StoreContext>() → gets the database context.
+//context.Database.MigrateAsync() → applies any pending EF Core migrations to update the database schema.
+//StoreContextSeed.SeedAsync(context) → adds initial data to the database if it’s empty.
+//try/catch → logs any errors that happen during migration or seeding.
+//using var means that every code that uses this variable, once this is finished executing,
+//the framework wll dispose the services that we've used, bc we're using this out of the
+//concept of DI(manual)
 try
 {
     using var scope = app.Services.CreateScope();
