@@ -22,9 +22,19 @@ public class GenericRepository<T>(StoreContext context) : IGenericRepository<T> 
         return await context.Set<T>().FindAsync(id);
     }
 
+    public async Task<T?> GetEntityWithSpec(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).FirstOrDefaultAsync();
+    }
+
     public async Task<IReadOnlyList<T>> ListAllAsync()
     {
         return await context.Set<T>().ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec)
+    {
+        return await ApplySpecification(spec).ToListAsync();
     }
 
     public void Remove(T entity)
@@ -42,4 +52,15 @@ public class GenericRepository<T>(StoreContext context) : IGenericRepository<T> 
         context.Set<T>().Attach(entity);
         context.Entry(entity).State = EntityState.Modified; 
     }
+
+    private IQueryable<T> ApplySpecification(ISpecification<T> spec)
+    {
+        return SpecificationEvaluator<T>.GetQuery(context.Set<T>().AsQueryable(), spec);
+    }
 }
+
+//What’s happening
+//context.Set<T>() → gets the table/collection of T from the database.
+//.AsQueryable() → makes it queryable so you can build LINQ queries (like .Where) that EF Core can convert to SQL.
+//SpecificationEvaluator<T>.GetQuery(...) → applies the specification/filter (ISpecification<T>) to the query.
+//Returns the filtered query, still not executed (EF Core will run it only when you call .ToListAsync() or similar).
