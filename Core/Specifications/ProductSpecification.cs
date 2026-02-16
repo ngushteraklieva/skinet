@@ -10,6 +10,8 @@ public class ProductSpecification: BaseSpecification<Product>
     (!specParams.Types.Any() || specParams.Types.Contains(x.Type))
     )
     {
+        ApplyPagination(specParams.PageSize * (specParams.PageIndex -1), specParams.PageSize);
+
         switch (specParams.Sort)
         {
             case "priceAsc":
