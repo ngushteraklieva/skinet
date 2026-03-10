@@ -34,3 +34,5 @@ Thumbs.db
 
 # Others
 *.swp
+
+appsettings.json
