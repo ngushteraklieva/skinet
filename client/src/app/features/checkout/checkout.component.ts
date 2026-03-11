@@ -5,7 +5,11 @@ import { MatAnchor, MatButton } from "@angular/material/button";
 import { RouterLink } from '@angular/router';
 import { StripeService } from '../../core/services/stripe.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
-import { StripeAddressElement } from '@stripe/stripe-js';
+import { Address, StripeAddressElement } from '@stripe/stripe-js';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox'
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { firstValueFrom } from 'rxjs';
+import { AccountService } from '../../core/services/account.service';
 
 @Component({
   selector: 'app-checkout',
@@ -14,7 +18,8 @@ import { StripeAddressElement } from '@stripe/stripe-js';
     MatStepperModule,
     MatAnchor,
     MatButton,
-    RouterLink
+    RouterLink,
+    MatCheckboxModule
 ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css',
@@ -22,7 +27,9 @@ import { StripeAddressElement } from '@stripe/stripe-js';
 export class CheckoutComponent implements OnInit, OnDestroy {
   private stripeService = inject(StripeService)
   private snackbar = inject(SnackbarService)
+  private accountService = inject(AccountService)
   addressElement?: StripeAddressElement;
+  saveAddress = false;
 
   async ngOnInit(){
     try{
@@ -35,5 +42,34 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stripeService.disposeElements()
+  }
+
+  onSaveAddressCheckboxChange(event: MatCheckboxChange){
+    this.saveAddress = event.checked
+  }
+
+  async onStepChange(event: StepperSelectionEvent){
+    if (event.selectedIndex === 1) {
+      if(this.saveAddress) {
+        const address = await this.getAddressFromStripeAddress()
+        address && firstValueFrom(this.accountService.updateAddress(address))
+      }
+    }
+  }
+
+  private async getAddressFromStripeAddress() {
+    const result = await this.addressElement?.getValue();
+    const address = result?.value.address;
+
+    if (address) {
+      return {
+        line1: address.line1,
+        line2: address?.line2 || undefined,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        postalCode: address.postal_code
+      }
+    } else return null;
   }
 }
