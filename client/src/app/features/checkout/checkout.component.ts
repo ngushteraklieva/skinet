@@ -50,9 +50,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   async onStepChange(event: StepperSelectionEvent){
     if (event.selectedIndex === 1) {
-      if(this.saveAddress) {
-        const address = await this.getAddressFromStripeAddress()
-        address && firstValueFrom(this.accountService.updateAddress(address))
+      if (this.saveAddress) {
+        const address = await this.getAddressFromStripeAddress();
+        address && firstValueFrom(this.accountService.updateAddress(address));
       }
     }
   }
@@ -64,7 +64,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (address) {
       return {
         line1: address.line1,
-        line2: address?.line2 || undefined,
+        line2: address.line2 ?? '',
         city: address.city,
         state: address.state,
         country: address.country,
