@@ -38,3 +38,4 @@ Thumbs.db
 appsettings.json
 
 client/src/environments/environment.development.ts
+client/src/environments/environment.ts
