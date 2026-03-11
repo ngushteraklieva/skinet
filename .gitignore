@@ -36,3 +36,5 @@ Thumbs.db
 *.swp
 
 appsettings.json
+
+client/src/environments/environment.development.ts
