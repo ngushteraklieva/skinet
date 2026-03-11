@@ -8,6 +8,7 @@ import { CartService } from './cart.service';
 import { Cart } from '../../shared/models/cart';
 import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,7 @@ export class StripeService {
   baseUrl = environment.baseUrl;
   cartService = inject(CartService)
   private http = inject(HttpClient)
+  private accountService = inject(AccountService)
   private stripePromise: Promise<Stripe | null>;
   private elements?: StripeElements;
   private addressElement?: StripeAddressElement;
@@ -47,8 +49,27 @@ export class StripeService {
     if(!this.addressElement){
       const elements = await this.initializeElements();
       if(elements){
+        const user = this.accountService.currentUser();
+        let defaultValues: StripeAddressElementOptions['defaultValues'] = {};
+
+        if(user){
+          defaultValues.name = user.firstName + ' ' + user.lastName; 
+        }
+
+        if(user?.address){
+          defaultValues.address = {
+            line1: user.address.line1,
+            line2: user.address.line2,
+            city: user.address.city,
+            state: user.address.state,
+            country: user.address.country,
+            postal_code: user.address.postalCode
+          }
+        }
+
         const options: StripeAddressElementOptions = {
-          mode: 'shipping'
+          mode: 'shipping',
+          defaultValues
         }
         this.addressElement = elements.create('address', options)
       } else {
@@ -67,5 +88,10 @@ export class StripeService {
         return cart
       })
     )
+  }
+
+  disposeElements(){
+    this.elements = undefined;
+    this.addressElement = undefined;
   }
 }

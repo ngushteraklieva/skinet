@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
 import { MatStepperModule } from '@angular/material/stepper'
 import { MatAnchor, MatButton } from "@angular/material/button";
@@ -19,7 +19,7 @@ import { StripeAddressElement } from '@stripe/stripe-js';
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css',
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
   private stripeService = inject(StripeService)
   private snackbar = inject(SnackbarService)
   addressElement?: StripeAddressElement;
@@ -31,5 +31,9 @@ export class CheckoutComponent implements OnInit {
     } catch (error:any){
       this.snackbar.error(error.message)
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stripeService.disposeElements()
   }
 }
