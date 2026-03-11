@@ -7,12 +7,14 @@ import { BusyService } from '../../core/services/busy.service';
 import { MatProgressBar } from '@angular/material/progress-bar'
 import { CartService } from '../../core/services/cart.service';
 import { AccountService } from '../../core/services/account.service';
-import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuModule, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDivider } from '@angular/material/divider';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   imports: [
+    CommonModule,
     MatIcon,
     MatButton,
     MatBadge,
@@ -20,7 +22,7 @@ import { MatDivider } from '@angular/material/divider';
     RouterModule,
     MatProgressBar,
     MatMenuTrigger,
-    MatMenu,
+    MatMenuModule,
     MatDivider,
     MatMenuItem
 ],

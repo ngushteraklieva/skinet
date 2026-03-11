@@ -10,7 +10,7 @@ import { map } from 'rxjs';
 })
 
 export class CartService {
-  baseUrl = environment.apiUrl;
+  baseUrl = environment.baseUrl;
   private http = inject(HttpClient);
   cart = signal<Cart | null>(null);
   itemCount = computed(() => {
