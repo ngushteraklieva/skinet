@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { loadStripe, Stripe, StripeAddressElement, 
+import { ConfirmationToken, loadStripe, Stripe, StripeAddressElement, 
   StripeAddressElementOptions, StripeElement, StripeElements, 
   StripePaymentElement} 
   from '@stripe/stripe-js';
@@ -104,6 +104,28 @@ export class StripeService {
       return await stripe.createConfirmationToken({elements})
     } else {
       throw new Error('Stripe not available')
+    }
+  }
+
+  async confirmPayment(createConfirmationToken: ConfirmationToken){
+    const stripe = await this.getStripeInstance();
+    const elements = await this.initializeElements();
+    const result = await elements.submit();
+
+    if(result.error) throw new Error(result.error.message)
+
+    const clientSecret = this.cartService.cart()?.clientSecret
+
+    if(stripe && clientSecret){
+      return await stripe.confirmPayment({
+        clientSecret: clientSecret,
+        confirmParams: {
+          confirmation_token: createConfirmationToken.id
+        },
+        redirect: 'if_required'
+      })
+    } else {
+      throw new Error('Unable to load Stripe')
     }
   }
 
