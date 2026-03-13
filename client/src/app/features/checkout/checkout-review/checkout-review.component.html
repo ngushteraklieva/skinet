@@ -3,11 +3,11 @@
   <dl>
     <dt class="font-medium">Shipping address</dt>
     <dd class="mt-1 text-gray-500 flex">
-        <span></span>
+        <span>{{confirmationToken?.shipping | address}}</span>
     </dd>
     <dt class="font-medium">Payment details</dt>
     <dd class="mt-1 text-gray-500 flex">
-      <span></span>
+      <span>{{confirmationToken?.payment_method_preview | payment}}</span>
     </dd>
   </dl>
 </div>
