@@ -5,7 +5,7 @@ import { MatAnchor, MatButton } from "@angular/material/button";
 import { RouterLink } from '@angular/router';
 import { StripeService } from '../../core/services/stripe.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
-import { Address, StripeAddressElement, StripeAddressElementChangeEvent, StripePaymentElement, StripePaymentElementChangeEvent } from '@stripe/stripe-js';
+import { Address, ConfirmationToken, StripeAddressElement, StripeAddressElementChangeEvent, StripePaymentElement, StripePaymentElementChangeEvent } from '@stripe/stripe-js';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox'
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { firstValueFrom } from 'rxjs';
@@ -43,6 +43,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   completionStatus = signal<{address: boolean, card: boolean, delivery: boolean}>(
     {address: false, card: false, delivery: false}
   )
+  confirmationToken?: ConfirmationToken;
 
   async ngOnInit(){
     try{
@@ -79,6 +80,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     })
   }
 
+  async getConfirmationToken(){
+    try {
+      if(Object.values(this.completionStatus()).every(status => status === true)){
+        const result = await this.stripeService.createConfirmationToken();
+        if(result.error) throw new Error(result.error.message)
+        this.confirmationToken = result.confirmationToken;
+        console.log(this.confirmationToken)
+      }
+    } catch(error: any) {
+      this.snackbar.error(error.message)
+    }
+  }
+
   ngOnDestroy(): void {
     this.stripeService.disposeElements()
   }
@@ -96,6 +110,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
     if(event.selectedIndex === 2) {
       await firstValueFrom(this.stripeService.createOrUpdatePaymentsIntent())
+    }
+    if(event.selectedIndex === 3) {
+      await this.getConfirmationToken()
     }
   }
 
