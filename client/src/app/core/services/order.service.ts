@@ -4,11 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Order, OrderToCreate } from '../../shared/models/order';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class OrderService {
-  baseUrl = environment.baseUrl
-  private http = inject(HttpClient)
+  baseUrl = environment.baseUrl;
+  private http = inject(HttpClient);
+  orderComplete = false;
 
   createOrder(orderToCreate: OrderToCreate) {
     return this.http.post<Order>(this.baseUrl + 'orders', orderToCreate);
